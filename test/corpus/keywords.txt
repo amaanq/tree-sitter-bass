@@ -9,6 +9,11 @@ Keywords
 ---
 
 (source
-  (keyword)
-  (keyword)
-  (keyword))
+  (keyword
+	(symbol))
+  (keyword
+	(module_call
+	  (module)
+	  (symbol)))
+  (keyword
+	(symbol)))

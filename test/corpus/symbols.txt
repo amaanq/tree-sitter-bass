@@ -10,5 +10,7 @@ foo-bar
 
 (source
   (symbol)
-  (symbol)
+  (module_call
+	(module)
+	(symbol))
   (symbol))
