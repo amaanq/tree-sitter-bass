@@ -1,5 +1,19 @@
+/**
+ * @file Bass grammar for tree-sitter
+ * @author Alex Suraci <suraci.alex@gmail.com>
+ * @author Amaan Qureshi <amaanq12@gmail.com>
+ * @license MIT
+ * @see {@link https://bass-lang.org/|official website}
+ */
+
+/* eslint-disable arrow-parens */
+/* eslint-disable camelcase */
+/* eslint-disable-next-line spaced-comment */
+/// <reference types="tree-sitter-cli/dsl" />
+// @ts-check
+
 const SYMBOL = token(
-	/[^\t\n\v\f\r \u0085\u00A0,"()\[\]{};^/:.0-9][^\t\n\v\f\r \u0085\u00A0,"()\[\]{};^/:.0-9.]*/
+  /[^\t\n\v\f\r \u0085\u00A0,"()\[\]{};^/:.0-9][^\t\n\v\f\r \u0085\u00A0,"()\[\]{};^/:.0-9.]*/,
 );
 
 const PATH = token(choice(
@@ -16,12 +30,12 @@ module.exports = grammar({
     /\s/,
   ],
 
-  word: $ => $.symbol,
-
   supertypes: $ => [
     $.form,
     $.literal,
   ],
+
+  word: $ => $.symbol,
 
   rules: {
     source: $ => repeat($.form),
@@ -29,9 +43,9 @@ module.exports = grammar({
     form: $ =>
       choice(
         // literals
-    	  $.literal,
+        $.literal,
 
-		    // Identifier
+        // Identifier
         $.symbol,
 
         $.keyword,
@@ -50,61 +64,61 @@ module.exports = grammar({
         $.meta,
       ),
 
-    keyword: $ => seq(":", choice($.symbol, $.path, $._module)),
+    keyword: $ => seq(':', choice($.symbol, $.path, $._module)),
 
-    _module: $ => 
+    _module: $ =>
       prec(1, choice(
         $.module_path,
         $.module_call,
       )),
-    module_path: $ => alias(seq(".", $.symbol), $.module),
-    module_call: $ => seq(alias($.symbol, $.module), token.immediate("."), $.symbol),
+    module_path: $ => alias(seq('.', $.symbol), $.module),
+    module_call: $ => seq(alias($.symbol, $.module), token.immediate('.'), $.symbol),
 
     path: _ => PATH,
 
     symbind: $ =>
       prec(1, seq(
-          choice($.symbol, $.symbind),
-          $.keyword,
-        ),
+        choice($.symbol, $.symbind),
+        $.keyword,
+      ),
       ),
 
     meta: $ =>
       seq(
-        field('marker', "^"),
+        field('marker', '^'),
         field('meta', $.form),
         $.form,
       ),
 
     list: $ =>
-	    seq(
-        "(",
+      seq(
+        '(',
         repeat($.form),
-        ")",
+        ')',
       ),
 
-    scope: $ => 
-	    seq(
-        "{",
+    scope: $ =>
+      seq(
+        '{',
         repeat($.form),
-        "}",
-	    ),
+        '}',
+      ),
 
     cons: $ =>
       seq(
-        "[",
+        '[',
         repeat($.form),
-        "]",
+        ']',
       ),
 
-	  literal: $ => 
-	    choice(
-		    $.number,
-		    $.boolean,
+    literal: $ =>
+      choice(
+        $.number,
+        $.boolean,
         $.string,
-		    $.ignore,
-		    $.null,
-	    ),
+        $.ignore,
+        $.null,
+      ),
 
     number: _ => /[+-]?[0-9]+/,
 
@@ -120,9 +134,9 @@ module.exports = grammar({
     // Workaround to https://github.com/tree-sitter/tree-sitter/issues/1156
     // We give names to the token_ constructs containing a regexp
     // so as to obtain a node in the CST.
-	  string_fragment: _ => token.immediate(prec(1, /[^"\\]+/)),
+    string_fragment: _ => token.immediate(prec(1, /[^"\\]+/)),
 
-	  _escape_sequence: $ =>
+    _escape_sequence: $ =>
       choice(
         prec(2, token.immediate(seq('\\', /[^abfnrtvxu'\"\\\?]/))),
         prec(1, $.escape_sequence),
@@ -138,7 +152,7 @@ module.exports = grammar({
         /u{[0-9a-fA-F]+}/,
       ))),
 
-	  ignore: _ => '_',
+    ignore: _ => '_',
 
     null: _ => 'null',
 
@@ -146,6 +160,6 @@ module.exports = grammar({
 
     symbol: _ => SYMBOL,
 
-	  comment: _ => token(/(;|#!).*/),
-  }
+    comment: _ => token(/(;|#!).*/),
+  },
 });
